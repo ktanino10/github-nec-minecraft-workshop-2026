@@ -37,7 +37,7 @@ As a volunteer activity of the GitHub Japan Corp Team, we organized a Minecraft 
 
 ## 🌟 Background
 
-In November 2025, I was appointed as the **Volunteer Leader for the Japan Corp Team** at GitHub. Drawing on my personal experience of teaching programming and STEM education to children twice a week, I partnered with NEC Corporation to plan this event.
+Around November 2025, it all started with a desire to **do something meaningful for children's education** through the GitHub Japan Corp Team. While exploring ways to contribute to children's futures through volunteer activities, I reached out to NEC Corporation, and together we planned and brought this event to life.
 
 We chose **Minecraft Education Edition** as the workshop platform and combined it with a tour of the Microsoft Shinagawa Office, giving children a firsthand experience of what it's like to be an engineer.
 
