@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G.I.T.H.U.B. — Feedback Reconnaissance & Education Evaluation System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+/* ===== CSS VARIABLES ===== */
+:root {
+  --seed-bg: #0a0e1a;
+  --seed-bg-light: #111833;
+  --seed-panel: rgba(15, 22, 50, 0.92);
+  --seed-cyan: #00e5ff;
+  --seed-cyan-dim: #0097a7;
+  --seed-cyan-dark: #004d5a;
+  --seed-white: #e8f0ff;
+  --seed-blue: #2962ff;
+  --seed-blue-light: #448aff;
+  --seed-purple: #7c4dff;
+  --seed-purple-dim: #4a2d8a;
+  --seed-red: #ff1744;
+  --seed-yellow: #ffd740;
+  --seed-green: #00e676;
+  --seed-border: rgba(0, 229, 255, 0.3);
+  --seed-glow: rgba(0, 229, 255, 0.15);
+  --ps-white: #e0e4ec;
+  --ps-red: #d32f2f;
+  --ps-blue: #1565c0;
+  --font-mono: 'Courier New', 'Consolas', monospace;
+  --font-ui: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--seed-bg);
+  color: var(--seed-cyan);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== BOOT SEQUENCE ===== */
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  background: #050810;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+#boot-screen.fade-out { opacity: 0; pointer-events: none; }
+#boot-text {
+  font-size: 14px;
+  color: var(--seed-cyan);
+  text-align: left;
+  white-space: pre-wrap;
+  max-width: 620px;
+  line-height: 1.7;
+  font-family: var(--font-mono);
+}
+#boot-text .cursor {
+  animation: blink 0.7s infinite;
+}
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+#boot-text .backronym-letter {
+  color: var(--seed-white);
+  font-weight: bold;
+  font-size: 16px;
+  text-shadow: 0 0 10px var(--seed-cyan);
+}
+
+/* ===== PHASE SHIFT FLASH ===== */
+.ps-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+}
+.ps-flash.active {
+  animation: phaseShift 0.8s ease-out;
+}
+@keyframes phaseShift {
+  0% { opacity: 0; background: white; }
+  15% { opacity: 0.8; background: white; }
+  40% { opacity: 0.3; background: rgba(0, 229, 255, 0.2); }
+  100% { opacity: 0; }
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(180deg, rgba(15, 22, 50, 0.98) 0%, var(--seed-panel) 100%);
+  border-bottom: 1px solid var(--seed-border);
+  padding: 16px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--seed-cyan), transparent);
+}
+
+.header-left { display: flex; align-items: center; gap: 18px; }
+
+.header-title .main-title {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 5px;
+  color: var(--seed-white);
+  font-family: var(--font-ui);
+}
+.header-title .sub-title {
+  font-size: 10px;
+  color: var(--seed-cyan-dim);
+  letter-spacing: 3px;
+  margin-top: 3px;
+}
+
+.header-right {
+  text-align: right;
+  font-size: 10px;
+  color: var(--seed-cyan-dim);
+  line-height: 1.7;
+}
+.header-right .status-active {
+  color: var(--seed-green);
+  text-shadow: 0 0 4px var(--seed-green);
+}
+.header-right .model-id {
+  color: var(--seed-yellow);
+  font-weight: bold;
+}
+
+/* ===== DASHBOARD GRID ===== */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  padding: 18px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ===== PANEL ===== */
+.panel {
+  background: var(--seed-panel);
+  border: 1px solid var(--seed-border);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.3s, box-shadow 0.3s;
+}
+.panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.panel:hover {
+  border-color: var(--seed-cyan);
+  box-shadow: 0 0 25px var(--seed-glow);
+}
+
+/* Top accent line */
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--seed-cyan), var(--seed-blue), var(--seed-purple));
+}
+
+/* Corner bracket decorations */
+.panel::after {
+  content: '';
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--seed-cyan);
+  border-right: 2px solid var(--seed-cyan);
+  opacity: 0.4;
+}
+
+.panel-title {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--seed-yellow);
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 215, 64, 0.2);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.panel-title::before {
+  content: '▸';
+  color: var(--seed-cyan);
+  font-size: 12px;
+}
+
+/* ===== SUMMARY CARDS ===== */
+.panel-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 18px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 18px 12px;
+  background: rgba(0, 229, 255, 0.03);
+  border: 1px solid var(--seed-border);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--seed-cyan);
+  box-shadow: 0 0 8px var(--seed-cyan);
+}
+
+.stat-value {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--seed-cyan);
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+  font-family: var(--font-ui);
+  line-height: 1;
+}
+.stat-value.yellow { color: var(--seed-yellow); text-shadow: 0 0 20px rgba(255, 215, 64, 0.5); }
+.stat-value.blue { color: var(--seed-blue-light); text-shadow: 0 0 20px rgba(68, 138, 255, 0.5); }
+.stat-value.purple { color: var(--seed-purple); text-shadow: 0 0 20px rgba(124, 77, 255, 0.5); }
+
+.stat-label {
+  font-size: 9px;
+  color: var(--seed-cyan-dim);
+  letter-spacing: 2px;
+  margin-top: 10px;
+  font-family: var(--font-ui);
+}
+.stat-sub {
+  font-size: 11px;
+  color: rgba(255, 215, 64, 0.6);
+  margin-top: 4px;
+}
+
+/* ===== RADAR ===== */
+.panel-radar { grid-column: 1 / 2; grid-row: span 2; }
+.radar-container { max-width: 340px; margin: 0 auto; }
+
+/* ===== SCORE BARS ===== */
+.panel-scores { grid-column: 2 / 4; }
+
+.score-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.score-label {
+  width: 180px;
+  font-size: 11px;
+  color: var(--seed-white);
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+}
+.score-label small {
+  display: block;
+  font-size: 9px;
+  color: var(--seed-cyan-dim);
+  letter-spacing: 1px;
+}
+.score-bar-wrap {
+  flex: 1;
+  height: 20px;
+  background: rgba(0, 229, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+.score-bar {
+  height: 100%;
+  width: 0;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.score-bar.cyan {
+  background: linear-gradient(90deg, var(--seed-cyan-dark), var(--seed-cyan));
+  box-shadow: inset 0 0 10px rgba(0, 229, 255, 0.3);
+}
+.score-bar.blue {
+  background: linear-gradient(90deg, rgba(41, 98, 255, 0.4), var(--seed-blue));
+  box-shadow: inset 0 0 10px rgba(41, 98, 255, 0.3);
+}
+.score-bar.purple {
+  background: linear-gradient(90deg, var(--seed-purple-dim), var(--seed-purple));
+  box-shadow: inset 0 0 10px rgba(124, 77, 255, 0.3);
+}
+.score-bar::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: inherit;
+  filter: brightness(1.5);
+  box-shadow: 0 0 6px currentColor;
+}
+.score-val {
+  width: 55px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--seed-cyan);
+  font-family: var(--font-ui);
+}
+
+/* ===== DISTRIBUTION ===== */
+.panel-dist { grid-column: 1 / 3; }
+.dist-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.dist-item {
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  padding: 10px;
+  background: rgba(0, 229, 255, 0.02);
+}
+.dist-item-title {
+  font-size: 9px;
+  color: var(--seed-yellow);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: var(--font-ui);
+}
+.dist-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 55px;
+}
+.dist-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.dist-bar {
+  width: 18px;
+  background: linear-gradient(180deg, var(--seed-cyan), var(--seed-cyan-dark));
+  box-shadow: 0 0 6px var(--seed-glow);
+  min-height: 2px;
+  transition: height 1s ease;
+}
+.dist-bar-label {
+  font-size: 8px;
+  color: var(--seed-cyan-dim);
+}
+.dist-bar-count {
+  font-size: 9px;
+  color: var(--seed-cyan);
+}
+
+/* ===== GITHUB CHART ===== */
+.panel-github { grid-column: 3 / 4; }
+.github-chart-wrap {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  margin: 0 auto;
+}
+/* Scope rings */
+.g-scope { position: absolute; border: 1px solid rgba(0, 229, 255, 0.1); border-radius: 50%; }
+.g-scope-1 { inset: 8%; }
+.g-scope-2 { inset: 22%; }
+.g-scope-h { position: absolute; top: 50%; left: 5%; right: 5%; height: 1px; background: rgba(0, 229, 255, 0.1); }
+.g-scope-v { position: absolute; left: 50%; top: 5%; bottom: 5%; width: 1px; background: rgba(0, 229, 255, 0.1); }
+
+.github-stats {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--seed-cyan-dim);
+  font-family: var(--font-ui);
+}
+.github-stats strong {
+  color: var(--seed-cyan);
+}
+
+/* ===== TEXT ANALYSIS ===== */
+.panel-text { grid-column: 1 / -1; }
+
+.text-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 14px;
+}
+.text-tab {
+  flex: 1;
+  padding: 8px;
+  background: rgba(0, 229, 255, 0.04);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  color: var(--seed-cyan-dim);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+}
+.text-tab:hover {
+  background: rgba(0, 229, 255, 0.08);
+  color: var(--seed-cyan);
+}
+.text-tab.active {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--seed-cyan);
+  color: var(--seed-cyan);
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+.keyword-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.1);
+  background: rgba(0, 229, 255, 0.02);
+}
+.keyword {
+  padding: 4px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  font-size: 11px;
+  color: var(--seed-cyan);
+  font-family: var(--font-ui);
+  transition: all 0.3s;
+  cursor: default;
+}
+.keyword:hover {
+  background: rgba(0, 229, 255, 0.1);
+  border-color: var(--seed-cyan);
+  box-shadow: 0 0 8px var(--seed-glow);
+}
+.keyword.top {
+  border-color: var(--seed-yellow);
+  color: var(--seed-yellow);
+  background: rgba(255, 215, 64, 0.06);
+}
+.keyword .kw-count {
+  font-size: 9px;
+  color: var(--seed-cyan-dim);
+  margin-left: 4px;
+}
+
+.log-entry {
+  padding: 8px 14px;
+  border-left: 2px solid var(--seed-cyan-dark);
+  margin-bottom: 5px;
+  font-size: 12px;
+  color: var(--seed-white);
+  line-height: 1.6;
+  background: rgba(0, 229, 255, 0.02);
+  font-family: var(--font-ui);
+  transition: all 0.3s;
+  animation: logSlide 0.4s ease;
+}
+.log-entry:hover {
+  border-left-color: var(--seed-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+.log-entry .log-id {
+  color: var(--seed-yellow);
+  font-size: 9px;
+  font-family: var(--font-mono);
+  margin-right: 8px;
+}
+@keyframes logSlide {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ===== HEADER LOGO ===== */
+.header-logo {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.3));
+}
+
+/* ===== CREW BUTTON ===== */
+.crew-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  padding: 10px 20px;
+  background: var(--seed-panel);
+  border: 1px solid var(--seed-cyan);
+  color: var(--seed-cyan);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--seed-glow);
+  transition: all 0.3s;
+}
+.crew-btn:hover {
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ===== CREW ROSTER MODAL ===== */
+#crew-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: none;
+  background: rgba(5, 8, 16, 0.95);
+  overflow-y: auto;
+}
+#crew-modal.active { display: block; animation: crewFadeIn 0.5s ease; }
+@keyframes crewFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.crew-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid var(--seed-border);
+}
+.crew-modal-title {
+  font-size: 16px;
+  letter-spacing: 5px;
+  color: var(--seed-cyan);
+  font-family: var(--font-ui);
+  font-weight: bold;
+}
+.crew-modal-close {
+  background: none;
+  border: 1px solid var(--seed-border);
+  color: var(--seed-cyan);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all 0.3s;
+}
+.crew-modal-close:hover {
+  border-color: var(--seed-red);
+  color: var(--seed-red);
+  box-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
+}
+
+.crew-teams {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.crew-team {
+  border: 1px solid var(--seed-border);
+  background: var(--seed-panel);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  animation: teamSlideIn 0.6s ease forwards;
+  opacity: 0;
+}
+.crew-team:nth-child(1) { animation-delay: 0.1s; }
+.crew-team:nth-child(2) { animation-delay: 0.25s; }
+.crew-team:nth-child(3) { animation-delay: 0.4s; }
+@keyframes teamSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.crew-team::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.crew-team.team-a::before { background: linear-gradient(90deg, #ff6b9d, #c44dff); }
+.crew-team.team-b::before { background: linear-gradient(90deg, var(--seed-cyan), var(--seed-blue)); }
+.crew-team.team-c::before { background: linear-gradient(90deg, var(--seed-yellow), #ff9100); }
+
+.team-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+}
+.team-mascot {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 229, 255, 0.3);
+  background: rgba(10, 14, 26, 0.6);
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.2));
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.team-mascot:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.5));
+}
+.team-info .team-code {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--seed-cyan-dim);
+  font-family: var(--font-mono);
+}
+.team-info .team-name {
+  font-size: 18px;
+  font-weight: bold;
+  font-family: var(--font-ui);
+  margin-top: 2px;
+}
+.team-a .team-name { color: #ff6b9d; text-shadow: 0 0 10px rgba(255, 107, 157, 0.3); }
+.team-b .team-name { color: var(--seed-cyan); text-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+.team-c .team-name { color: var(--seed-yellow); text-shadow: 0 0 10px rgba(255, 215, 64, 0.3); }
+
+.pilot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pilot-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.08);
+  background: rgba(0, 229, 255, 0.02);
+  transition: all 0.3s;
+  animation: pilotAppear 0.4s ease forwards;
+  opacity: 0;
+}
+.pilot-card:hover {
+  border-color: rgba(0, 229, 255, 0.3);
+  background: rgba(0, 229, 255, 0.06);
+}
+.pilot-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.pilot-avatar:hover {
+  border-color: var(--seed-cyan);
+  box-shadow: 0 0 10px var(--seed-glow);
+  transform: scale(1.1);
+}
+.pilot-name {
+  font-size: 14px;
+  color: var(--seed-white);
+  font-family: var(--font-ui);
+}
+.pilot-rank {
+  font-size: 9px;
+  color: var(--seed-cyan-dim);
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+@keyframes pilotAppear {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Nicole section */
+.crew-nicole {
+  padding: 20px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.nicole-card {
+  border: 1px solid rgba(124, 77, 255, 0.3);
+  background: var(--seed-panel);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 400px;
+  animation: teamSlideIn 0.6s ease 0.55s forwards;
+  opacity: 0;
+}
+.nicole-card::before {
+  content: 'SPECIAL GUEST';
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--seed-purple);
+  background: var(--seed-bg);
+  padding: 0 6px;
+  font-family: var(--font-mono);
+}
+.nicole-card { position: relative; }
+
+@media (max-width: 768px) {
+  .crew-teams { grid-template-columns: 1fr; }
+}
+
+/* ===== IMAGE LIGHTBOX ===== */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(5, 8, 16, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+#lightbox.active {
+  display: flex;
+  animation: lbFadeIn 0.3s ease;
+}
+@keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+#lightbox img {
+  max-width: 85vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border: 2px solid var(--seed-cyan);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.3);
+  border-radius: 8px;
+  animation: lbZoomIn 0.3s ease;
+}
+@keyframes lbZoomIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+#lightbox .lb-name {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  color: var(--seed-cyan);
+  letter-spacing: 4px;
+  font-family: var(--font-ui);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+#lightbox .lb-close-hint {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 10px;
+  color: var(--seed-cyan-dim);
+  letter-spacing: 2px;
+}
+
+/* ===== MISSION PANEL ===== */
+.panel-mission {
+  grid-column: 1 / -1;
+}
+.mission-content {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.mission-octocat {
+  flex-shrink: 0;
+  width: 120px;
+  display: flex;
+  justify-content: center;
+}
+.mission-details {
+  flex: 1;
+}
+.mission-row {
+  display: flex;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0, 229, 255, 0.06);
+}
+.mission-key {
+  width: 90px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--seed-yellow);
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+}
+.mission-val {
+  font-size: 13px;
+  color: var(--seed-white);
+  font-family: var(--font-ui);
+}
+.mission-addr {
+  font-size: 11px;
+  color: var(--seed-cyan-dim);
+}
+
+/* Crew tags */
+.crew-section .mission-val {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.crew-tag {
+  padding: 3px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  font-size: 11px;
+  color: var(--seed-white);
+  background: rgba(0, 229, 255, 0.05);
+  font-family: var(--font-ui);
+}
+.crew-tag.crew-org {
+  border-color: rgba(255, 215, 64, 0.3);
+  color: var(--seed-yellow);
+  background: rgba(255, 215, 64, 0.05);
+}
+.crew-tag.crew-gh {
+  border-color: rgba(0, 229, 255, 0.5);
+  color: var(--seed-cyan);
+  background: rgba(0, 229, 255, 0.1);
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.3);
+}
+.crew-total {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--seed-cyan);
+  margin-left: 6px;
+  text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+/* ===== OCTOCAT IMAGE ===== */
+.octocat-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+  animation: octoFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));
+}
+@keyframes octoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 9px;
+  color: rgba(0, 229, 255, 0.25);
+  letter-spacing: 3px;
+  border-top: 1px solid rgba(0, 229, 255, 0.1);
+  font-family: var(--font-ui);
+}
+.footer .secret-hint {
+  margin-top: 5px;
+  font-size: 8px;
+  opacity: 0.5;
+}
+
+/* ===== LANGUAGE SWITCH OVERLAY ===== */
+#lang-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+}
+#lang-overlay.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: langFlash 2.5s ease-out forwards;
+}
+@keyframes langFlash {
+  0% { background: rgba(0, 0, 0, 0); }
+  8% { background: rgba(255, 255, 255, 0.85); }
+  20% { background: rgba(0, 229, 255, 0.12); }
+  40% { background: rgba(0, 0, 0, 0.6); }
+  100% { background: rgba(0, 0, 0, 0); }
+}
+
+.lang-mascot-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+}
+#lang-overlay.active .lang-mascot-container {
+  animation: mascotReveal 2.2s ease-out 0.2s forwards;
+}
+@keyframes mascotReveal {
+  0% { opacity: 0; transform: scale(2.5) rotate(-10deg); }
+  25% { opacity: 1; transform: scale(1) rotate(0deg); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+
+.lang-mascot-img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 12px;
+  filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.6));
+  border: 2px solid rgba(0, 229, 255, 0.5);
+  background: rgba(10, 14, 26, 0.8);
+}
+
+.lang-label {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 12px;
+  font-family: var(--font-ui);
+  text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+  opacity: 0;
+}
+#lang-overlay.active .lang-label {
+  animation: labelAppear 2s ease 0.4s forwards;
+}
+@keyframes labelAppear {
+  0% { opacity: 0; letter-spacing: 30px; }
+  30% { opacity: 1; letter-spacing: 12px; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.lang-label.en-mode { color: var(--seed-cyan); }
+.lang-label.jp-mode { color: var(--seed-yellow); }
+
+/* HUD frame around mascot */
+.mascot-hud-frame {
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+}
+.mascot-hud-frame .hud-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+.mascot-hud-frame .hud-tl { top: 0; left: 0; border-top: 2px solid var(--seed-cyan); border-left: 2px solid var(--seed-cyan); }
+.mascot-hud-frame .hud-tr { top: 0; right: 0; border-top: 2px solid var(--seed-cyan); border-right: 2px solid var(--seed-cyan); }
+.mascot-hud-frame .hud-bl { bottom: 0; left: 0; border-bottom: 2px solid var(--seed-cyan); border-left: 2px solid var(--seed-cyan); }
+.mascot-hud-frame .hud-br { bottom: 0; right: 0; border-bottom: 2px solid var(--seed-cyan); border-right: 2px solid var(--seed-cyan); }
+
+.mascot-hud-label {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--seed-cyan);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+/* Particle effect */
+.lang-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Active glow on panels */
+body.lang-switching .panel {
+  border-color: rgba(0, 229, 255, 0.5) !important;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15) !important;
+  transition: all 0.5s;
+}
+body.lang-switching .panel::before {
+  background: linear-gradient(90deg, var(--seed-cyan), var(--seed-purple), var(--seed-cyan)) !important;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .dashboard { grid-template-columns: 1fr 1fr; }
+  .panel-summary { grid-template-columns: repeat(2, 1fr); }
+  .panel-radar { grid-column: auto; grid-row: auto; }
+  .panel-scores, .panel-dist, .panel-github, .panel-text { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .dashboard { grid-template-columns: 1fr; }
+  .panel-summary { grid-template-columns: 1fr 1fr; }
+  .header { flex-direction: column; gap: 10px; text-align: center; }
+  .header-right { text-align: center; }
+  .dist-grid { grid-template-columns: 1fr 1fr; }
+  .score-label { width: 120px; font-size: 9px; }
+  .backronym-letter { font-size: 30px; width: 40px; }
+  .backronym-word { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PHASE SHIFT FLASH -->
+<div class="ps-flash" id="ps-flash"></div>
+
+<!-- ===== BOOT SEQUENCE ===== -->
+<div id="boot-screen">
+  <div id="boot-text"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="header" id="main-header" style="display:none;">
+  <div class="header-left">
+    <div class="header-title">
+      <div class="main-title">G.I.T.H.U.B. SYSTEM</div>
+      <div class="sub-title">FEEDBACK RECONNAISSANCE & EDUCATION EVALUATION</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div>OPERATION: <span class="model-id">MINECRAFT WORKSHOP 2026</span></div>
+    <div>DATE: C.E.2026.03.26 — MICROSOFT SHINAGAWA HQ</div>
+    <div>PHASE SHIFT: <span class="status-active">■ ACTIVE</span></div>
+    <div>ENTRIES: <span class="status-active">15 RESPONSES / 53 ATTENDEES</span></div>
+  </div>
+</header>
+
+<!-- ===== DASHBOARD ===== -->
+<main class="dashboard" id="main-dashboard" style="display:none;">
+
+  <!-- MISSION INFO -->
+  <div class="panel panel-mission">
+    <div class="panel-title">MISSION BRIEFING — イベント概要</div>
+    <div class="mission-content">
+      <div class="mission-octocat">
+        <img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="Octocat" class="octocat-img">
+      </div>
+      <div class="mission-details">
+        <div class="mission-row">
+          <span class="mission-key">EVENT</span>
+          <span class="mission-val">マインクラフト ワークショップ＆オフィス見学ツアー</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">THEME</span>
+          <span class="mission-val">教育版マインクラフトで「100年つづく家づくり」に挑戦</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">DATE</span>
+          <span class="mission-val">2026年3月26日（木）13:00〜17:00</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">LOCATION</span>
+          <span class="mission-val">日本マイクロソフト 品川本社オフィス</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">ADDRESS</span>
+          <span class="mission-val mission-addr">〒108-0075 東京都港区港南2-16-3 品川グランドセントラルタワー</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">HOST</span>
+          <span class="mission-val">ギットハブ・ジャパン合同会社</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">PARTNERS</span>
+          <span class="mission-val mission-addr">NPO法人デジタルものづくり協議会（Minecraftカップ運営委員会）/ NECグループ / 品川区 すまいるキッズ</span>
+        </div>
+        <div class="mission-row">
+          <span class="mission-key">PROGRAM</span>
+          <span class="mission-val">ワークショップ 13:00〜16:00 ／ オフィス見学 16:00〜17:00</span>
+        </div>
+        <div class="mission-row crew-section">
+          <span class="mission-key">CREW</span>
+          <span class="mission-val">
+            <span class="crew-tag">子ども 19名</span>
+            <span class="crew-tag">保護者 15名</span>
+            <span class="crew-tag crew-org">品川区役所 2名</span>
+            <span class="crew-tag crew-org">NEC 7名</span>
+            <span class="crew-tag crew-gh">GitHub 10名</span>
+            <span class="crew-total">計 53名</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="panel panel-summary">
+    <div class="stat-card">
+      <div class="stat-value" id="val-sat">—</div>
+      <div class="stat-label">SATISFACTION</div>
+      <div class="stat-sub">全体満足度</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value yellow" id="val-rec">—</div>
+      <div class="stat-label">RECOMMENDATION</div>
+      <div class="stat-sub">推奨スコア</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value blue" id="val-rep">—</div>
+      <div class="stat-label">REPEAT INTENT</div>
+      <div class="stat-sub">再参加意欲</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value purple" id="val-edu">—</div>
+      <div class="stat-label">EDUCATIONAL VALUE</div>
+      <div class="stat-sub">教育的価値</div>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="panel panel-radar">
+    <div class="panel-title">TACTICAL RADAR — 総合評価</div>
+    <div class="radar-container"><canvas id="radarChart"></canvas></div>
+  </div>
+
+  <!-- SCORE BARS -->
+  <div class="panel panel-scores">
+    <div class="panel-title">COMBAT DATA — 項目別スコア</div>
+    <div id="score-bars"></div>
+  </div>
+
+  <!-- DISTRIBUTION -->
+  <div class="panel panel-dist">
+    <div class="panel-title">SENSOR ARRAY — スコア分布</div>
+    <div class="dist-grid" id="dist-grid"></div>
+  </div>
+
+  <!-- GITHUB -->
+  <div class="panel panel-github">
+    <div class="panel-title">TARGET LOCK — GitHub認知度</div>
+    <div class="github-chart-wrap">
+      <div class="g-scope g-scope-1"></div>
+      <div class="g-scope g-scope-2"></div>
+      <div class="g-scope-h"></div>
+      <div class="g-scope-v"></div>
+      <canvas id="githubChart"></canvas>
+    </div>
+    <div class="github-stats" id="github-stats"></div>
+  </div>
+
+  <!-- TEXT -->
+  <div class="panel panel-text">
+    <div class="panel-title">COMM LOG — テキストデータ解析</div>
+    <div class="text-tabs">
+      <div class="text-tab active" data-tab="good">良かった点 — POSITIVE</div>
+      <div class="text-tab" data-tab="improve">改善点 — IMPROVE</div>
+      <div class="text-tab" data-tab="impression">感想 — IMPRESSION</div>
+    </div>
+    <div id="text-keywords"></div>
+    <div id="text-logs"></div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="main-footer" style="display:none;">
+  G.I.T.H.U.B. SYSTEM — FEEDBACK RECONNAISSANCE & EDUCATION EVALUATION — C.E.2026
+  <div class="secret-hint">[ ◇ TYPE "en" → ENGLISH ／ TYPE "jp" → 日本語 ◇ ]</div>
+</footer>
+
+<!-- CREW ROSTER BUTTON -->
+<button class="crew-btn" id="crew-btn" style="display:none;" onclick="toggleCrewModal()">▸ CREW ROSTER</button>
+
+<!-- IMAGE LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <div class="lb-close-hint">CLICK TO CLOSE</div>
+  <img id="lb-img" src="" alt="">
+  <div id="lb-name" class="lb-name"></div>
+</div>
+
+<!-- CREW ROSTER MODAL -->
+<div id="crew-modal">
+  <div class="crew-modal-header">
+    <div class="crew-modal-title">CREW ROSTER — 所属部隊一覧</div>
+    <button class="crew-modal-close" onclick="toggleCrewModal()">✕</button>
+  </div>
+  <div class="crew-teams">
+    <div class="crew-team team-a">
+      <div class="team-header">
+        <img src="3D Mascot Sticker by GitHub.gif" alt="Mona" class="team-mascot" onclick="openLightbox('3D Mascot Sticker by GitHub.gif', 'Mona', event)">
+        <div class="team-info">
+          <div class="team-code">SQUADRON ALPHA</div>
+          <div class="team-name">MONA TEAM</div>
+        </div>
+      </div>
+      <div class="pilot-list" id="team-a-pilots"></div>
+    </div>
+    <div class="crew-team team-b">
+      <div class="team-header">
+        <img src="3D Copilot Sticker by GitHub.gif" alt="Copilot" class="team-mascot" onclick="openLightbox('3D Copilot Sticker by GitHub.gif', 'Copilot', event)">
+        <div class="team-info">
+          <div class="team-code">SQUADRON BRAVO</div>
+          <div class="team-name">COPILOT TEAM</div>
+        </div>
+      </div>
+      <div class="pilot-list" id="team-b-pilots"></div>
+    </div>
+    <div class="crew-team team-c">
+      <div class="team-header">
+        <img src="3D Duck Sticker by GitHub.gif" alt="Ducky" class="team-mascot" onclick="openLightbox('3D Duck Sticker by GitHub.gif', 'Ducky', event)">
+        <div class="team-info">
+          <div class="team-code">SQUADRON CHARLIE</div>
+          <div class="team-name">DUCKY TEAM</div>
+        </div>
+      </div>
+      <div class="pilot-list" id="team-c-pilots"></div>
+    </div>
+  </div>
+  <div class="crew-nicole">
+    <div class="nicole-card">
+      <img src="children/にこる.png" alt="にこる" class="pilot-avatar" style="width:50px;height:50px;cursor:pointer;" onclick="openLightbox('children/にこる.png', 'にこる', event)">
+      <div>
+        <div class="pilot-rank">SPECIAL GUEST — MC</div>
+        <div class="pilot-name" style="color:var(--seed-purple);">にこる</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE SWITCH OVERLAY -->
+<div id="lang-overlay">
+  <div class="lang-mascot-container">
+    <div class="mascot-hud-label">SYSTEM LANGUAGE MODULE</div>
+    <div class="mascot-hud-frame">
+      <div class="hud-corner hud-tl"></div>
+      <div class="hud-corner hud-tr"></div>
+      <div class="hud-corner hud-bl"></div>
+      <div class="hud-corner hud-br"></div>
+    </div>
+    <img id="lang-mascot-img" class="lang-mascot-img" src="" alt="GitHub Mascot">
+    <div id="lang-label" class="lang-label"></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const surveyData = [
+  { id:2,  satisfaction:5, recommend:5, expectation:5, difficulty:5, github:"いいえ", repeat:5, education:5, good:"実際に触れる時間がたくさんあったこと", improve:"", impression:"貴重な機会をありがとうございました。\n大人も楽しめました" },
+  { id:3,  satisfaction:5, recommend:5, expectation:5, difficulty:3, github:"はい",   repeat:5, education:5, good:"家作りというテーマの中で子供の創造を引き出すイベントでとてもありがたかったです。", improve:"特にありません。", impression:"素晴らしい内容で大変満足です。" },
+  { id:4,  satisfaction:5, recommend:5, expectation:5, difficulty:4, github:"",       repeat:5, education:5, good:"マイクラのチーム作業、オフィス見学", improve:"", impression:"" },
+  { id:5,  satisfaction:5, recommend:5, expectation:5, difficulty:3, github:"いいえ", repeat:5, education:5, good:"みんなで協力して何かを成し遂げる、という過程を小学校低学年で経験出来たのがよかったと思います。", improve:"拘束時間が少し長いかなと感じました。", impression:"親も勉強になりましたし、無料とは思えないクオリティで、大変満足できました。普段足を踏み入れることのないMicrosoft社も見学できて、とても良い時間を過ごすことができました。ありがとうございます。" },
+  { id:6,  satisfaction:5, recommend:4, expectation:3, difficulty:3, github:"はい",   repeat:4, education:4, good:"少人数のチーム制でのワークショップだった点", improve:"説明時の声が少し小さかったのでハンドマイクを使用した方が良いかなと思いました。", impression:"子供がとても楽しんで参加できて良かったです" },
+  { id:7,  satisfaction:5, recommend:5, expectation:5, difficulty:4, github:"いいえ", repeat:5, education:4, good:"飲食しながら、自分のペースでワークを進められる点", improve:"グループワークをもう少し円滑に出来れば良いと思った", impression:"" },
+  { id:8,  satisfaction:5, recommend:5, expectation:5, difficulty:1, github:"いいえ", repeat:5, education:5, good:"割と自由な建築をさせて貰ったグループでしたし、社内ツアーも良かった。", improve:"制作ワールドを持ち帰れたらもっと良かったかな", impression:"社会科見学としても良かったと思いました。" },
+  { id:9,  satisfaction:5, recommend:5, expectation:5, difficulty:3, github:"はい",   repeat:5, education:5, good:"チームで話し合って一つの作品を作ったこと", improve:"子供向けならお菓子をもっと多めで。あと、スナックのような溢れやすいお菓子は気をつけること。飴や固形物などテーブルや床が汚れないお菓子がベスト。", impression:"見学ツアーとても貴重な経験でした。アンプロカップのテーマが未来の仕事場なので良い実体験ができたかと思います。" },
+  { id:10, satisfaction:5, recommend:5, expectation:5, difficulty:3, github:"はい",   repeat:5, education:5, good:"ワークショップをチームで行えた事。マイクロソフトオフィス見学", improve:"家づくりの進行はメンターさんが入っていただけましたが、進め方を事前に決めておくとよりやりやすくなるかなと感じました。", impression:"ワークショップもにこるさんのお話もマイクロソフトのオフィス見学もとても満足でした。子供の刺激になったと思います。ありがとうございました。" },
+  { id:11, satisfaction:5, recommend:5, expectation:5, difficulty:2, github:"いいえ", repeat:5, education:5, good:"自分たちで創造したものが、形になるところ。達成感やチームワークも鍛えられて、良かったなと思いました。", improve:"できたマイクラの世界もなにかの形にして持って帰れると、記憶として残りやすいと思った。", impression:"非常に高い倍率と聞いたので、参加できたこと自体がとても光栄でした。また参加したいそうです。子供たちも前々からとても楽しみにしていましたが、期待以上に楽しかったようで、ワークショップ中はとても目が輝いていました！貴重な機会をありがとうございました！また参加したいです。" },
+  { id:12, satisfaction:5, recommend:5, expectation:5, difficulty:3, github:"はい",   repeat:5, education:5, good:"みんなで一つのものを作り上げる体験", improve:"メンターによって進行の段取りや進行にムラがあり、最初の分担が効率的ではなかったので一律にすると良いと思った", impression:"子供がとても楽しそうで良かった。\n保護者の座る椅子が足りず（みんな席に荷物を置いていた）ずっと立ちっぱなしなのは少し辛かった" },
+  { id:13, satisfaction:5, recommend:5, expectation:5, difficulty:4, github:"いいえ", repeat:5, education:5, good:"見学でどのようなことをマイクロソフトの方々がしているかが分かったということです。", improve:"素晴らしいイベントであったため出来ません", impression:"自分の好きなマインクラフトができマイクロソフトの仕組み？のようなことが分かりました。" },
+  { id:14, satisfaction:5, recommend:5, expectation:4, difficulty:3, github:"いいえ", repeat:5, education:4, good:"短時間で、みんなで一つのものを作り上げてて感動しました。", improve:"家族構成や年齢記入は困りましたw", impression:"また参加したいです！！" },
+  { id:15, satisfaction:4, recommend:4, expectation:4, difficulty:3, github:"いいえ", repeat:3, education:3, good:"子どもたちが、協力して取り組めたこと", improve:"年齢層に幅があるので、取り組みの狙いが、理解できたかどうか。", impression:"こういう世界があることを初めて知ったので、楽しかったです。ありがとうございました。" },
+  { id:16, satisfaction:4, recommend:4, expectation:3, difficulty:4, github:"いいえ", repeat:3, education:5, good:"AID 教育", improve:"子供向けな話し方まとめ方が必要かなと思います。", impression:"趣旨がはっきり掴めていませんが…良かったです。" }
+];
+
+const scoreFields = [
+  { key:'satisfaction', label:'全体満足度',   en:'SATISFACTION',   color:'cyan' },
+  { key:'recommend',    label:'推奨度',       en:'RECOMMENDATION', color:'cyan' },
+  { key:'expectation',  label:'期待充足度',   en:'EXPECTATION',    color:'blue' },
+  { key:'difficulty',   label:'難易度',       en:'DIFFICULTY',     color:'purple' },
+  { key:'repeat',       label:'再参加意欲',   en:'REPEAT INTENT',  color:'cyan' },
+  { key:'education',    label:'教育的価値',   en:'EDUCATION',      color:'blue' }
+];
+
+function avg(a) { return a.reduce((s, v) => s + v, 0) / a.length; }
+function vals(k) { return surveyData.map(d => d[k]).filter(v => typeof v === 'number'); }
+function dist(k) { const d={1:0,2:0,3:0,4:0,5:0}; vals(k).forEach(v => d[v]++); return d; }
+
+// ===== BOOT =====
+const bootLines = [
+  "MOBILE SUIT OPERATION SYSTEM",
+  "G.I.T.H.U.B. v2.0 — C.E.2026",
+  "================================",
+  "",
+  "> LOADING PHASE SHIFT ARMOR... OK",
+  "> CALIBRATING SENSOR ARRAY... OK",
+  "> CONNECTING TO ARCHANGEL DB... OK",
+  "",
+  "  G.enerat ive",
+  "  I.nterconnect ed",
+  "  T.elemetr y",
+  "  H.euristi c",
+  "  U.nilatera l",
+  "  B.ase-protoco l",
+  "",
+  "  ─── Feedback Reconnaissance &",
+  "      Education Evaluation System ───",
+  "",
+  "> SURVEY DATA: 15 RESPONSES / 53 ATTENDEES",
+  "> ANALYSIS ENGINE: ONLINE",
+  "> ALL SYSTEMS: GREEN ■",
+  "> LAUNCHING DASHBOARD...",
+];
+
+// Mark which lines contain backronym letters for highlighting
+const backronymLineIndices = [8,9,10,11,12,13];
+
+function formatBootLine(fullText, lineIndex) {
+  if (backronymLineIndices.includes(lineIndex)) {
+    // Highlight the first capital letter
+    return fullText.replace(/^(\s*)([A-Z])/, '$1<span class="backronym-letter">$2</span>');
+  }
+  return fullText;
+}
+
+async function boot() {
+  const bootText = document.getElementById('boot-text');
+  const bootScreen = document.getElementById('boot-screen');
+
+  for (let i = 0; i < bootLines.length; i++) {
+    const line = bootLines[i];
+    for (let j = 0; j <= line.length; j++) {
+      const prevLines = bootLines.slice(0, i).map((l, idx) => formatBootLine(l, idx)).join('\n');
+      const currentPartial = line.substring(0, j);
+      const currentFormatted = formatBootLine(currentPartial, i);
+      bootText.innerHTML = prevLines + '\n' + currentFormatted + '<span class="cursor">█</span>';
+      await new Promise(r => setTimeout(r, line.startsWith('>') ? 18 : line.startsWith('  ') ? 25 : 5));
+    }
+    await new Promise(r => setTimeout(r, line === '' ? 100 : backronymLineIndices.includes(i) ? 150 : 200));
+  }
+
+  await new Promise(r => setTimeout(r, 600));
+
+  // Phase shift flash
+  document.getElementById('ps-flash').classList.add('active');
+  bootScreen.classList.add('fade-out');
+
+  document.getElementById('main-header').style.display = 'flex';
+  document.getElementById('main-dashboard').style.display = 'grid';
+  document.getElementById('main-footer').style.display = 'block';
+  document.getElementById('crew-btn').style.display = 'block';
+
+  await new Promise(r => setTimeout(r, 300));
+  initDashboard();
+
+  setTimeout(() => bootScreen.remove(), 1000);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== DASHBOARD =====
+function initDashboard() {
+  // Animate panels in
+  document.querySelectorAll('.panel').forEach((p, i) => {
+    setTimeout(() => p.classList.add('visible'), i * 120);
+  });
+
+  renderSummary();
+  renderScores();
+  renderRadar();
+  renderDist();
+  renderGithub();
+  renderText('good');
+  initTabs();
+}
+
+function animNum(el, target) {
+  let cur = 0;
+  const step = target / 35;
+  const iv = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    el.textContent = cur.toFixed(1);
+    if (cur >= target) clearInterval(iv);
+  }, 25);
+}
+
+function renderSummary() {
+  animNum(document.getElementById('val-sat'), avg(vals('satisfaction')));
+  animNum(document.getElementById('val-rec'), avg(vals('recommend')));
+  animNum(document.getElementById('val-rep'), avg(vals('repeat')));
+  animNum(document.getElementById('val-edu'), avg(vals('education')));
+}
+
+function renderScores() {
+  const c = document.getElementById('score-bars');
+  c.innerHTML = '';
+  scoreFields.forEach(f => {
+    const v = avg(vals(f.key));
+    const pct = (v / 5) * 100;
+    const mainLabel = currentLang === 'en' ? f.en : f.label;
+    const subLabel = currentLang === 'en' ? '' : `<small>${f.en}</small>`;
+    const el = document.createElement('div');
+    el.className = 'score-item';
+    el.innerHTML = `
+      <div class="score-label">${mainLabel}${subLabel}</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar ${f.color}" data-w="${pct}"></div>
+      </div>
+      <div class="score-val">${v.toFixed(1)}</div>
+    `;
+    c.appendChild(el);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar').forEach(b => b.style.width = b.dataset.w + '%');
+  }, 100);
+}
+
+let radarChartInstance = null;
+let githubChartInstance = null;
+
+function renderRadar() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  const labels = currentLang === 'en' ? scoreFields.map(f => f.en) : scoreFields.map(f => f.label);
+  if (radarChartInstance) radarChartInstance.destroy();
+  radarChartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: scoreFields.map(f => avg(vals(f.key))),
+        backgroundColor: 'rgba(0, 229, 255, 0.12)',
+        borderColor: 'rgba(0, 229, 255, 0.8)',
+        borderWidth: 2,
+        pointBackgroundColor: '#00e5ff',
+        pointBorderColor: '#00e5ff',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { r: {
+        beginAtZero: true, max: 5,
+        ticks: { stepSize:1, color:'rgba(0,229,255,0.3)', backdropColor:'transparent', font:{size:9} },
+        grid: { color:'rgba(0,229,255,0.12)' },
+        angleLines: { color:'rgba(0,229,255,0.12)' },
+        pointLabels: { color:'rgba(0,229,255,0.7)', font:{size:10, family:"'Segoe UI',sans-serif"} }
+      }},
+      plugins: { legend: { display: false } },
+      animation: { duration: 1500, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+function renderDist() {
+  const g = document.getElementById('dist-grid');
+  g.innerHTML = '';
+  scoreFields.forEach(f => {
+    const d = dist(f.key);
+    const mx = Math.max(...Object.values(d), 1);
+    const title = currentLang === 'en' ? f.en : f.label;
+    let bars = '';
+    for (let s = 1; s <= 5; s++) {
+      const h = Math.max((d[s] / mx) * 48, 2);
+      bars += `<div class="dist-bar-wrap"><div class="dist-bar-count">${d[s]}</div><div class="dist-bar" style="height:${h}px"></div><div class="dist-bar-label">${s}</div></div>`;
+    }
+    const el = document.createElement('div');
+    el.className = 'dist-item';
+    el.innerHTML = `<div class="dist-item-title">${title}</div><div class="dist-bars">${bars}</div>`;
+    g.appendChild(el);
+  });
+}
+
+function renderGithub() {
+  const yes = surveyData.filter(d => d.github === 'はい').length;
+  const no = surveyData.filter(d => d.github === 'いいえ').length;
+  const unk = surveyData.length - yes - no;
+  if (githubChartInstance) githubChartInstance.destroy();
+  const glabels = currentLang === 'en' ? ['Knew it (Yes)', 'Didn\'t know (No)', 'No answer'] : ['知っていた', '知らなかった', '未回答'];
+  githubChartInstance = new Chart(document.getElementById('githubChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: glabels,
+      datasets: [{ data:[yes,no,unk],
+        backgroundColor: ['rgba(0,229,255,0.7)','rgba(255,215,64,0.7)','rgba(100,100,100,0.4)'],
+        borderColor: ['#00e5ff','#ffd740','#666'], borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, cutout: '55%',
+      plugins: { legend: { position:'bottom', labels: { color:'rgba(0,229,255,0.6)', font:{size:10,family:"'Segoe UI'"}, padding:8 }}},
+      animation: { duration: 1200 }
+    }
+  });
+  const statsLabel = currentLang === 'en'
+    ? `Awareness: <strong>${((yes/(yes+no))*100).toFixed(0)}%</strong> (${yes}/${yes+no} respondents)`
+    : `認知率: <strong>${((yes/(yes+no))*100).toFixed(0)}%</strong> (${yes}/${yes+no}名)`;
+  document.getElementById('github-stats').innerHTML = statsLabel;
+}
+
+// ===== LANGUAGE STATE =====
+let currentLang = 'ja';
+
+// ===== ENGLISH TRANSLATIONS =====
+const surveyDataEN = [
+  { good:"There was plenty of hands-on time", improve:"", impression:"Thank you for this valuable opportunity.\nAdults enjoyed it too." },
+  { good:"The house-building theme drew out children's creativity. Very grateful.", improve:"Nothing in particular.", impression:"Wonderful content, very satisfied." },
+  { good:"Minecraft teamwork, office tour", improve:"", impression:"" },
+  { good:"The process of working together to accomplish something as early elementary schoolers was great.", improve:"The event duration felt a bit long.", impression:"It was educational for parents too. The quality was unbelievable for a free event. We got to visit a Microsoft office, which is usually inaccessible. A wonderful time. Thank you." },
+  { good:"Small-group team workshop format", improve:"The speaker's voice was a bit quiet; a handheld mic would be better.", impression:"I'm glad the kids really enjoyed participating." },
+  { good:"Being able to eat snacks while working at your own pace", improve:"Wish group work could have been smoother.", impression:"" },
+  { good:"Our group had creative freedom in building, and the office tour was great.", improve:"It would have been even better if we could take the world home.", impression:"It was great as a social studies field trip." },
+  { good:"Discussing as a team and creating one piece together", improve:"More snacks for kids. Avoid messy snacks like chips; candy or solid snacks that don't dirty tables/floors are best.", impression:"The office tour was a precious experience. The Unplugged Cup theme is 'future workplace,' so it was a great real-life experience." },
+  { good:"Doing the workshop as a team. Microsoft office tour.", improve:"Having mentors was great, but pre-planning the building process would help.", impression:"The workshop, Nicole's talk, and Microsoft office tour were all very satisfying. It was stimulating for the children. Thank you." },
+  { good:"Seeing what we created take shape. It was great for building achievement and teamwork.", improve:"If the Minecraft world could be taken home in some form, it would leave a lasting memory.", impression:"I heard the acceptance rate was very high, so we were honored just to participate. They want to come again. The children were looking forward to it and it exceeded their expectations — their eyes were shining! Thank you for this precious opportunity! We want to participate again." },
+  { good:"The experience of building one thing together as a group", improve:"Mentor facilitation quality varied; initial task distribution wasn't efficient — should be standardized.", impression:"Glad the kids had so much fun.\nThere weren't enough chairs for parents (everyone placed bags on seats), so standing the whole time was a bit tough." },
+  { good:"Learning what Microsoft employees actually do through the tour.", improve:"It was such a wonderful event that there's nothing to improve.", impression:"I got to play my favorite Minecraft and learned about how Microsoft works." },
+  { good:"Amazed at how everyone built something together in such a short time.", improve:"The family composition and age fields were confusing lol", impression:"Want to participate again!!" },
+  { good:"Children cooperating and working together", improve:"With a wide age range, it's unclear if everyone understood the goals.", impression:"It was fun learning that this world exists for the first time. Thank you." },
+  { good:"AI & Education", improve:"A more child-friendly speaking and presentation style is needed.", impression:"I didn't fully grasp the purpose, but... it was good." }
+];
+
+const importantWordsJA = [
+  'チーム','チームワーク','協力','見学','オフィス','マイクロソフト','Microsoft',
+  'マイクラ','ワークショップ','子供','子ども','楽しい','楽しかった','楽しんで',
+  '貴重','満足','体験','経験','創造','建築','メンター','進行',
+  '作品','一つ','作り上げ','教育','勉強','良かった','素晴らしい',
+  '参加','お菓子','椅子','声','時間','持ち帰','社会科見学',
+  '刺激','無料','感動','目が輝','グループ','少人数'
+];
+
+const importantWordsEN = [
+  'team','teamwork','cooperat','tour','office','Microsoft','Minecraft',
+  'workshop','children','kids','fun','enjoy','happy',
+  'precious','satisf','experience','creat','build','mentor','facilitat',
+  'together','education','learn','great','wonderful',
+  'participat','snack','chair','voice','time','take home','field trip',
+  'stimulat','free','amaz','eyes','group','small'
+];
+
+function getImportantWords() { return currentLang === 'en' ? importantWordsEN : importantWordsJA; }
+
+function extractKw(texts) {
+  const words = getImportantWords();
+  const kw = {};
+  texts.forEach(t => { if(!t) return; words.forEach(w => { if(t.toLowerCase().includes(w.toLowerCase())) kw[w]=(kw[w]||0)+1; }); });
+  return Object.entries(kw).sort((a,b) => b[1]-a[1]).slice(0,15);
+}
+
+function getTextSrc() {
+  if (currentLang === 'en') {
+    return {
+      good: surveyDataEN.map(d=>d.good).filter(Boolean),
+      improve: surveyDataEN.map(d=>d.improve).filter(Boolean),
+      impression: surveyDataEN.map(d=>d.impression).filter(Boolean)
+    };
+  }
+  return {
+    good: surveyData.map(d=>d.good).filter(Boolean),
+    improve: surveyData.map(d=>d.improve).filter(Boolean),
+    impression: surveyData.map(d=>d.impression).filter(Boolean)
+  };
+}
+
+function renderText(tab) {
+  const texts = getTextSrc()[tab];
+  const kws = extractKw(texts);
+
+  let kwH = '<div class="keyword-cloud">';
+  kws.forEach(([w,c],i) => { kwH += `<div class="keyword ${i<3?'top':''}">${w}<span class="kw-count">×${c}</span></div>`; });
+  kwH += '</div>';
+  document.getElementById('text-keywords').innerHTML = kwH;
+
+  let logH = '';
+  texts.forEach((t,i) => { logH += `<div class="log-entry" style="animation-delay:${i*0.06}s"><span class="log-id">[${String(i+1).padStart(3,'0')}]</span>${t}</div>`; });
+  document.getElementById('text-logs').innerHTML = logH;
+}
+
+function initTabs() {
+  document.querySelectorAll('.text-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.text-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderText(tab.dataset.tab);
+    });
+  });
+}
+
+// ===== LANGUAGE SWITCH =====
+let langBuffer = '';
+let langCooldown = false;
+
+const mascotGifs = [
+  '3D Duck Sticker by GitHub.gif',
+  '3D Copilot Sticker by GitHub.gif',
+  '3D Mascot Sticker by GitHub.gif'
+];
+
+document.addEventListener('keydown', (e) => {
+  if (langCooldown) return;
+  langBuffer += e.key.toLowerCase();
+  if (langBuffer.length > 10) langBuffer = langBuffer.slice(-10);
+  if (langBuffer.includes('en') && currentLang !== 'en') {
+    langBuffer = '';
+    triggerLangSwitch('en');
+  } else if (langBuffer.includes('jp') && currentLang !== 'ja') {
+    langBuffer = '';
+    triggerLangSwitch('ja');
+  }
+});
+
+function triggerLangSwitch(lang) {
+  if (langCooldown) return;
+  langCooldown = true;
+
+  const overlay = document.getElementById('lang-overlay');
+  const mascotImg = document.getElementById('lang-mascot-img');
+  const label = document.getElementById('lang-label');
+
+  // Pick random mascot GIF
+  const gif = mascotGifs[Math.floor(Math.random() * mascotGifs.length)];
+  mascotImg.src = gif;
+
+  // Set label
+  if (lang === 'en') {
+    label.textContent = 'ENGLISH MODE';
+    label.className = 'lang-label en-mode';
+  } else {
+    label.textContent = '日本語モード';
+    label.className = 'lang-label jp-mode';
+  }
+
+  // Spawn particles
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'lang-particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = Math.random() * 100 + '%';
+    p.style.background = lang === 'en' ? 'var(--seed-cyan)' : 'var(--seed-yellow)';
+    p.style.animation = `langParticle ${1 + Math.random() * 1.5}s ease-out ${Math.random() * 0.4}s forwards`;
+    overlay.appendChild(p);
+  }
+
+  if (!document.getElementById('lang-particle-style')) {
+    const style = document.createElement('style');
+    style.id = 'lang-particle-style';
+    style.textContent = `@keyframes langParticle { 0% { opacity:1; transform:scale(1); } 100% { opacity:0; transform:scale(0) translateY(-80px); } }`;
+    document.head.appendChild(style);
+  }
+
+  overlay.classList.add('active');
+  document.body.classList.add('lang-switching');
+
+  // Switch language after flash
+  setTimeout(() => {
+    if (lang === 'en') switchToEnglish();
+    else switchToJapanese();
+  }, 600);
+
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    overlay.querySelectorAll('.lang-particle').forEach(p => p.remove());
+    setTimeout(() => {
+      document.body.classList.remove('lang-switching');
+      langCooldown = false;
+    }, 1000);
+  }, 2500);
+}
+
+function switchToEnglish() {
+  currentLang = 'en';
+
+  const panelTitles = {
+    'TACTICAL RADAR — 総合評価': 'TACTICAL RADAR — OVERALL EVALUATION',
+    'COMBAT DATA — 項目別スコア': 'COMBAT DATA — SCORE BY CATEGORY',
+    'SENSOR ARRAY — スコア分布': 'SENSOR ARRAY — SCORE DISTRIBUTION',
+    'TARGET LOCK — GitHub認知度': 'TARGET LOCK — GITHUB AWARENESS',
+    'COMM LOG — テキストデータ解析': 'COMM LOG — TEXT DATA ANALYSIS',
+    'MISSION BRIEFING — イベント概要': 'MISSION BRIEFING — EVENT OVERVIEW'
+  };
+  document.querySelectorAll('.panel-title').forEach(el => {
+    const t = el.textContent.trim().replace(/^▸\s*/, '');
+    if (panelTitles[t]) el.innerHTML = '▸ ' + panelTitles[t];
+  });
+
+  const statSubs = { '全体満足度':'Overall Satisfaction', '推奨スコア':'Recommendation Score', '再参加意欲':'Repeat Intent', '教育的価値':'Educational Value' };
+  document.querySelectorAll('.stat-sub').forEach(el => {
+    if (statSubs[el.textContent]) el.textContent = statSubs[el.textContent];
+  });
+
+  // Mission panel text
+  const missionVals = {
+    'マインクラフト ワークショップ＆オフィス見学ツアー': 'Minecraft Workshop & Office Tour',
+    '教育版マインクラフトで「100年つづく家づくり」に挑戦': 'Building a "House That Lasts 100 Years" with Minecraft Education',
+    '2026年3月26日（木）13:00〜17:00': 'Thursday, March 26, 2026 — 13:00–17:00',
+    '日本マイクロソフト 品川本社オフィス': 'Microsoft Japan — Shinagawa HQ Office',
+    '〒108-0075 東京都港区港南2-16-3 品川グランドセントラルタワー': '2-16-3 Konan, Minato-ku, Tokyo — Shinagawa Grand Central Tower',
+    'ギットハブ・ジャパン合同会社': 'GitHub Japan G.K.',
+    'ワークショップ 13:00〜16:00 ／ オフィス見学 16:00〜17:00': 'Workshop 13:00–16:00 / Office Tour 16:00–17:00'
+  };
+  document.querySelectorAll('.mission-val').forEach(el => {
+    if (el.querySelector('.crew-tag')) return; // skip crew tags
+    const t = el.textContent.trim();
+    if (missionVals[t]) el.textContent = missionVals[t];
+  });
+  document.querySelectorAll('.mission-val.mission-addr').forEach(el => {
+    if (el.textContent.includes('NPO法人')) {
+      el.textContent = 'NPO Digital Monozukuri (Minecraft Cup) / NEC Group / Shinagawa-ku Smile Kids';
+    }
+  });
+
+  // Crew tags
+  document.querySelectorAll('.crew-tag').forEach(el => {
+    const map = { '子ども 19名':'Children: 19', '保護者 15名':'Parents: 15', '品川区役所 2名':'Shinagawa Ward: 2', 'NEC 7名':'NEC: 7', 'GitHub 10名':'GitHub: 10' };
+    if (map[el.textContent]) el.textContent = map[el.textContent];
+  });
+  document.querySelectorAll('.crew-total').forEach(el => {
+    if (el.textContent.includes('計')) el.textContent = 'Total: 53';
+  });
+
+  // Tabs
+  const tabs = document.querySelectorAll('.text-tab');
+  ['POSITIVE FEEDBACK', 'IMPROVEMENT SUGGESTIONS', 'IMPRESSIONS'].forEach((l, i) => { if (tabs[i]) tabs[i].textContent = l; });
+
+  renderScores();
+  renderRadar();
+  renderDist();
+  renderGithub();
+  const activeTab = document.querySelector('.text-tab.active');
+  renderText(activeTab ? activeTab.dataset.tab : 'good');
+
+  // Crew roster title & re-render if open
+  const crewTitle = document.querySelector('.crew-modal-title');
+  if (crewTitle) crewTitle.textContent = 'CREW ROSTER — TEAM ASSIGNMENTS';
+  if (document.getElementById('crew-modal').classList.contains('active')) renderCrewRoster();
+
+  const footer = document.querySelector('.footer');
+  if (footer) footer.innerHTML = 'G.I.T.H.U.B. SYSTEM — FEEDBACK RECONNAISSANCE & EDUCATION EVALUATION — C.E.2026<div class="secret-hint">[ ◇ TYPE "jp" → 日本語 ◇ ]</div>';
+}
+
+function switchToJapanese() {
+  currentLang = 'ja';
+
+  const panelTitles = {
+    'TACTICAL RADAR — OVERALL EVALUATION': 'TACTICAL RADAR — 総合評価',
+    'COMBAT DATA — SCORE BY CATEGORY': 'COMBAT DATA — 項目別スコア',
+    'SENSOR ARRAY — SCORE DISTRIBUTION': 'SENSOR ARRAY — スコア分布',
+    'TARGET LOCK — GITHUB AWARENESS': 'TARGET LOCK — GitHub認知度',
+    'COMM LOG — TEXT DATA ANALYSIS': 'COMM LOG — テキストデータ解析',
+    'MISSION BRIEFING — EVENT OVERVIEW': 'MISSION BRIEFING — イベント概要'
+  };
+  document.querySelectorAll('.panel-title').forEach(el => {
+    const t = el.textContent.trim().replace(/^▸\s*/, '');
+    if (panelTitles[t]) el.innerHTML = '▸ ' + panelTitles[t];
+  });
+
+  const statSubs = { 'Overall Satisfaction':'全体満足度', 'Recommendation Score':'推奨スコア', 'Repeat Intent':'再参加意欲', 'Educational Value':'教育的価値' };
+  document.querySelectorAll('.stat-sub').forEach(el => {
+    if (statSubs[el.textContent]) el.textContent = statSubs[el.textContent];
+  });
+
+  // Mission panel
+  const missionVals = {
+    'Minecraft Workshop & Office Tour': 'マインクラフト ワークショップ＆オフィス見学ツアー',
+    'Building a "House That Lasts 100 Years" with Minecraft Education': '教育版マインクラフトで「100年つづく家づくり」に挑戦',
+    'Thursday, March 26, 2026 — 13:00–17:00': '2026年3月26日（木）13:00〜17:00',
+    'Microsoft Japan — Shinagawa HQ Office': '日本マイクロソフト 品川本社オフィス',
+    '2-16-3 Konan, Minato-ku, Tokyo — Shinagawa Grand Central Tower': '〒108-0075 東京都港区港南2-16-3 品川グランドセントラルタワー',
+    'GitHub Japan G.K.': 'ギットハブ・ジャパン合同会社',
+    'Workshop 13:00–16:00 / Office Tour 16:00–17:00': 'ワークショップ 13:00〜16:00 ／ オフィス見学 16:00〜17:00'
+  };
+  document.querySelectorAll('.mission-val').forEach(el => {
+    if (el.querySelector('.crew-tag')) return;
+    const t = el.textContent.trim();
+    if (missionVals[t]) el.textContent = missionVals[t];
+  });
+  document.querySelectorAll('.mission-val.mission-addr').forEach(el => {
+    if (el.textContent.includes('NPO Digital')) {
+      el.textContent = 'NPO法人デジタルものづくり協議会（Minecraftカップ運営委員会）/ NECグループ / 品川区 すまいるキッズ';
+    }
+  });
+
+  // Crew tags
+  document.querySelectorAll('.crew-tag').forEach(el => {
+    const map = { 'Children: 19':'子ども 19名', 'Parents: 15':'保護者 15名', 'Shinagawa Ward: 2':'品川区役所 2名', 'NEC: 7':'NEC 7名', 'GitHub: 10':'GitHub 10名' };
+    if (map[el.textContent]) el.textContent = map[el.textContent];
+  });
+  document.querySelectorAll('.crew-total').forEach(el => {
+    if (el.textContent.includes('Total')) el.textContent = '計 53名';
+  });
+
+  // Tabs
+  const tabs = document.querySelectorAll('.text-tab');
+  ['良かった点 — POSITIVE', '改善点 — IMPROVE', '感想 — IMPRESSION'].forEach((l, i) => { if (tabs[i]) tabs[i].textContent = l; });
+
+  renderScores();
+  renderRadar();
+  renderDist();
+  renderGithub();
+  const activeTab = document.querySelector('.text-tab.active');
+  renderText(activeTab ? activeTab.dataset.tab : 'good');
+
+  // Crew roster title & re-render if open
+  const crewTitle = document.querySelector('.crew-modal-title');
+  if (crewTitle) crewTitle.textContent = 'CREW ROSTER — 所属部隊一覧';
+  if (document.getElementById('crew-modal').classList.contains('active')) renderCrewRoster();
+
+  const footer = document.querySelector('.footer');
+  if (footer) footer.innerHTML = 'G.I.T.H.U.B. SYSTEM — FEEDBACK RECONNAISSANCE & EDUCATION EVALUATION — C.E.2026<div class="secret-hint">[ ◇ TYPE "en" → ENGLISH ◇ ]</div>';
+}
+
+// ===== CREW ROSTER =====
+const crewData = {
+  a: [
+    { name: 'HINAKO', nameEn: 'HINAKO', file: 'A_HINAKO.png' },
+    { name: 'LEO', nameEn: 'LEO', file: 'A_LEO.png' },
+    { name: 'けい', nameEn: 'KEI', file: 'A_けい.png' },
+    { name: 'まゆ', nameEn: 'MAYU', file: 'A_まゆ.png' },
+    { name: 'みかこ', nameEn: 'MIKAKO', file: 'A_みかこ.png' },
+    { name: 'みなと', nameEn: 'MINATO', file: 'A_みなと.png' },
+    { name: 'りんりん', nameEn: 'RINRIN', file: 'A_りんりん.png' },
+  ],
+  b: [
+    { name: 'あき', nameEn: 'AKI', file: 'B_あき.png' },
+    { name: 'コハル', nameEn: 'KOHARU', file: 'B_コハル.png' },
+    { name: 'ちか', nameEn: 'CHIKA', file: 'B_ちか.png' },
+    { name: 'ナオキ', nameEn: 'NAOKI', file: 'B_ナオキ.png' },
+    { name: 'はるた', nameEn: 'HARUTA', file: 'B_はるた.png' },
+    { name: 'ひろき', nameEn: 'HIROKI', file: 'B_ひろき.png' },
+    { name: 'みーちゃん', nameEn: 'MI-CHAN', file: 'B_みーちゃん.png' },
+  ],
+  c: [
+    { name: 'たくみ', nameEn: 'TAKUMI', file: 'C_たくみ.png' },
+    { name: 'ダンダン', nameEn: 'DANDAN', file: 'C_ダンダン.png' },
+    { name: 'デンジ', nameEn: 'DENJI', file: 'C_デンジ.png' },
+    { name: 'まさひと', nameEn: 'MASAHITO', file: 'C_まさひと.png' },
+    { name: 'みなと', nameEn: 'MINATO', file: 'C_みなと.png' },
+  ]
+};
+
+function renderCrewRoster() {
+  const isEn = currentLang === 'en';
+  const rank = 'ENGINEER';
+  Object.entries(crewData).forEach(([team, members]) => {
+    const container = document.getElementById(`team-${team}-pilots`);
+    container.innerHTML = '';
+    members.forEach((m, i) => {
+      const displayName = isEn ? m.nameEn : m.name;
+      const card = document.createElement('div');
+      card.className = 'pilot-card';
+      card.style.animationDelay = (i * 0.08) + 's';
+      card.innerHTML = `
+        <img src="children/${m.file}" alt="${displayName}" class="pilot-avatar" onclick="openLightbox('children/${m.file}', '${displayName}', event)">
+        <div>
+          <div class="pilot-rank">${rank}</div>
+          <div class="pilot-name">${displayName}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  });
+
+  // Nicole
+  const nicoleSection = document.querySelector('.nicole-card');
+  if (nicoleSection) {
+    const nicName = nicoleSection.querySelector('.pilot-name');
+    const nicRank = nicoleSection.querySelector('.pilot-rank');
+    if (nicName) nicName.textContent = isEn ? 'NICOLE' : 'にこる';
+    if (nicRank) nicRank.textContent = 'SPECIAL GUEST — MC';
+  }
+}
+
+function openLightbox(src, name, e) {
+  e.stopPropagation();
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-name').textContent = name;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+function toggleCrewModal() {
+  const modal = document.getElementById('crew-modal');
+  if (modal.classList.contains('active')) {
+    modal.classList.remove('active');
+  } else {
+    renderCrewRoster();
+    modal.classList.add('active');
+  }
+}
+
+// ===== START =====
+document.addEventListener('DOMContentLoaded', boot);
+</script>
+</body>
+</html>
