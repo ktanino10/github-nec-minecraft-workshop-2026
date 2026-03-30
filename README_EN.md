@@ -85,7 +85,9 @@ Before closing, I surprised the children with a demo showing **anime characters 
 
 ## 📊 Post-Event Survey Results (15 responses)
 
-> 📌 View the full survey dashboard [here](https://ktanino10.github.io/github-nec-minecraft-workshop-2026/survey/).
+> 📌 View the full survey dashboard [here](https://ktanino10.github.io/github-nec-minecraft-workshop-2026/survey/). Use the **JP / EN** buttons to switch between Japanese and English.
+>
+> 💡 *This dashboard was built in approximately 5 minutes using GitHub Copilot CLI.*
 
 ### Overall Scores (out of 5.0)
 
@@ -139,7 +141,7 @@ We considered distributing the Minecraft worlds created by the children during t
 | File | Description |
 |------|-------------|
 | [📄 flyer.pdf](flyer.pdf) | Event recruitment flyer |
-| [📊 survey/index.html](https://ktanino10.github.io/github-nec-minecraft-workshop-2026/survey/) | Survey results dashboard (GitHub Pages) |
+| [📊 survey/index.html](https://ktanino10.github.io/github-nec-minecraft-workshop-2026/survey/) | Survey results dashboard (GitHub Pages) — Switch JP / EN with buttons |
 | [🖼️ necgithublogo.png](necgithublogo.png) | GitHub × NEC logo built in Minecraft |
 
 ---
