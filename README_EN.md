@@ -2,6 +2,8 @@
 
 # 🎮 GitHub × NEC Minecraft Workshop & Office Tour
 
+📖 [日本語版 →](README.md)
+
 > **March 26, 2026 (Thu) 13:00–17:00 ｜ Microsoft Shinagawa Office, Tokyo, Japan**
 
 As a volunteer activity of the GitHub Japan Corp Team, we organized a Minecraft Education Workshop & Office Tour in collaboration with NEC Corporation, targeting elementary school children. This repository serves as an activity log.
@@ -27,7 +29,7 @@ As a volunteer activity of the GitHub Japan Corp Team, we organized a Minecraft 
 | Children | 19 |
 | Parents | 15 |
 | Shinagawa Ward Officials | 2 |
-| Special Guest (Nicole Kondo + parents) | 3 |
+| Special Guests | 2 |
 | NEC Volunteers | 7 |
 | GitHub Volunteer Leader | 1 |
 | GitHub Volunteers | 9 |
@@ -76,10 +78,13 @@ Welcomed the children with: *"Today, you will all become engineers!"* — explai
 | 5 | GitHub stickers |
 
 ### 6. Surprise Demo — Minecraft × GitHub Copilot CLI 🤖
-Before closing, I surprised the children with a demo showing **anime characters brought into the Minecraft world** using GitHub Copilot CLI. The children were amazed and wanted to know how it was done.
+Before closing, I surprised the children with a demo showing **GitHub's Octocat brought to life as a GIF animation inside the Minecraft world** using GitHub Copilot CLI — giving them a little glimpse of what AI engineers are doing these days.
 
-- 🔗 [copilot-cli-minecraft-experiment](https://github.com/ktanino10/copilot-cli-minecraft-experiment)
-- 🎬 [YouTube Demo](https://www.youtube.com/watch?v=fOD_9N9I8m8)
+| Original GIF | Playback in Minecraft |
+|:------------:|:---------------------:|
+| <img src="https://raw.githubusercontent.com/ktanino10/copilot-cli-minecraft-experiment2/main/images/hula_loop_octodex03.gif" width="250"> | <img src="https://raw.githubusercontent.com/ktanino10/copilot-cli-minecraft-experiment2/main/images/octcat_minecraft.gif" width="350"> |
+
+🔗 [copilot-cli-minecraft-experiment2](https://github.com/ktanino10/copilot-cli-minecraft-experiment2)
 
 ---
 
@@ -160,5 +165,3 @@ We considered distributing the Minecraft worlds created by the children during t
 
 *Recorded by Kyosuke Tanino — Volunteer Leader, GitHub Japan Corp Team*
 *Event Date: March 26, 2026*
-
-📖 [日本語版 →](README.md)
