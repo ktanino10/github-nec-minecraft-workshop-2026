@@ -52,13 +52,13 @@ We received approximately **60 applications** — due to limited PC availability
 ## 🎯 Event Program
 
 ### 1. Opening Presentation (10 min)
-Welcomed the children with: *"Today, you will all become engineers!"* — explaining how GitHub connects engineers around the world, and that today was about experiencing teamwork and building together.
+We started by asking: *"What is an engineer?"* — someone who builds things and solves problems — and told the children that today, they would all become engineers. We then introduced **GitHub**, a company that connects engineers around the world, and **NEC**, our partner in organizing this event. Next, we introduced all the participating children (a.k.a. today's engineers!) and our special guest, Nicole Kondo. We wrapped up with a rallying call: *"Let's work together and build something amazing!"* — and the children split into three teams: **Mona, Ducky, and Copilot** to kick off the workshop.
 
-| <img src="opening_engineer.jpg" width="250"> | <img src="opening_github.jpg" width="250"> |
-|:---:|:---:|
-| What is an Engineer? | What is GitHub? |
-| <img src="opening_intro.jpg" width="250"> | <img src="opening_teams.jpg" width="250"> |
-| Introducing Participants & Guest | Team Assignments |
+| <img src="opening_engineer.jpg" width="220"> | <img src="opening_github.jpg" width="220"> | <img src="opening_nec.jpg" width="220"> |
+|:---:|:---:|:---:|
+| What is an Engineer? | What is GitHub? | What is NEC? |
+| <img src="opening_intro.jpg" width="220"> | <img src="opening_teams.jpg" width="220"> | |
+| Introducing Participants & Guest | 3 Teams Ready to Go! | |
 
 ### 2. Minecraft Workshop — "Build a House That Lasts 100 Years" 🏠
 - Divided into **3 teams** (Mona, Copilot, Ducky)
