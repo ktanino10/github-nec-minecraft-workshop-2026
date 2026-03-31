@@ -70,10 +70,7 @@ Welcomed the children with: *"Today, you will all become engineers!"* — explai
 - Parents were equally excited — many said *"I've always wanted to visit!"*
 
 ### 5. Special Gifts 🎁
-
-| <img src="手作りのギフトバッグ.jpg" width="250"> | <img src="3Dprint_mano_ducky_copilot.jpg" width="250"> | <img src="Name＿Card.jpg" width="250"> |
-|:---:|:---:|:---:|
-| Handmade Gift Bags | 3D-Printed Characters | Personalized Name Badges |
+We prepared handmade special gifts for every child who participated.
 
 | # | Gift |
 |---|------|
@@ -82,6 +79,10 @@ Welcomed the children with: *"Today, you will all become engineers!"* — explai
 | 3 | Snacks from Walt Disney World, Florida |
 | 4 | Personalized name badges with custom Octocats |
 | 5 | GitHub stickers |
+
+| <img src="手作りのギフトバッグ.jpg" width="250"> | <img src="3Dprint_mano_ducky_copilot.jpg" width="250"> | <img src="Name＿Card.jpg" width="250"> |
+|:---:|:---:|:---:|
+| Custom Gift Bags | 3D-Printed Characters | Personalized Name Badges |
 
 ### 6. Surprise Demo — Minecraft × GitHub Copilot CLI 🤖
 Before closing, I surprised the children with a demo showing **GitHub's Octocat brought to life as a GIF animation inside the Minecraft world** using GitHub Copilot CLI — giving them a little glimpse of what AI engineers are doing these days.
