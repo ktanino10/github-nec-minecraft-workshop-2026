@@ -12,6 +12,8 @@ As a volunteer activity of the GitHub Japan Corp Team, we organized a Minecraft 
 
 ## 📋 Event Overview
 
+![Event Details](eventdetails.png)
+
 | Detail | Information |
 |--------|------------|
 | **Event Name** | Minecraft Education Workshop & Office Tour |
