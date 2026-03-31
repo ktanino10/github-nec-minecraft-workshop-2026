@@ -71,6 +71,10 @@ Welcomed the children with: *"Today, you will all become engineers!"* — explai
 
 ### 5. Special Gifts 🎁
 
+| <img src="手作りのギフトバッグ.jpg" width="250"> | <img src="3Dprint_mano_ducky_copilot.jpg" width="250"> | <img src="Name＿Card.jpg" width="250"> |
+|:---:|:---:|:---:|
+| Handmade Gift Bags | 3D-Printed Characters | Personalized Name Badges |
+
 | # | Gift |
 |---|------|
 | 1 | Custom GitHub Copilot CLI gift bags |
