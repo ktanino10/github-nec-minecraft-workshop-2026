@@ -1085,7 +1085,7 @@ body.lang-switching .panel::before {
     <div>OPERATION: <span class="model-id">MINECRAFT WORKSHOP 2026</span></div>
     <div>DATE: C.E.2026.03.26 — MICROSOFT SHINAGAWA HQ</div>
     <div>PHASE SHIFT: <span class="status-active">■ ACTIVE</span></div>
-    <div>ENTRIES: <span class="status-active">15 RESPONSES / 53 ATTENDEES</span></div>
+    <div>ENTRIES: <span class="status-active">15 RESPONSES / 55 ATTENDEES</span></div>
   </div>
 </header>
 
@@ -1138,9 +1138,10 @@ body.lang-switching .panel::before {
             <span class="crew-tag">子ども 19名</span>
             <span class="crew-tag">保護者 15名</span>
             <span class="crew-tag crew-org">品川区役所 2名</span>
+            <span class="crew-tag crew-org">特別ゲスト 2名</span>
             <span class="crew-tag crew-org">NEC 7名</span>
             <span class="crew-tag crew-gh">GitHub 10名</span>
-            <span class="crew-total">計 53名</span>
+            <span class="crew-total">計 55名</span>
           </span>
         </div>
       </div>
@@ -1351,7 +1352,7 @@ const bootLines = [
   "  ─── Feedback Reconnaissance &",
   "      Education Evaluation System ───",
   "",
-  "> SURVEY DATA: 15 RESPONSES / 53 ATTENDEES",
+  "> SURVEY DATA: 15 RESPONSES / 55 ATTENDEES",
   "> ANALYSIS ENGINE: ONLINE",
   "> ALL SYSTEMS: GREEN ■",
   "> LAUNCHING DASHBOARD...",
@@ -1761,11 +1762,11 @@ function switchToEnglish() {
 
   // Crew tags
   document.querySelectorAll('.crew-tag').forEach(el => {
-    const map = { '子ども 19名':'Children: 19', '保護者 15名':'Parents: 15', '品川区役所 2名':'Shinagawa Ward: 2', 'NEC 7名':'NEC: 7', 'GitHub 10名':'GitHub: 10' };
+    const map = { '子ども 19名':'Children: 19', '保護者 15名':'Parents: 15', '品川区役所 2名':'Shinagawa Ward: 2', '特別ゲスト 2名':'Special Guests: 2', 'NEC 7名':'NEC: 7', 'GitHub 10名':'GitHub: 10' };
     if (map[el.textContent]) el.textContent = map[el.textContent];
   });
   document.querySelectorAll('.crew-total').forEach(el => {
-    if (el.textContent.includes('計')) el.textContent = 'Total: 53';
+    if (el.textContent.includes('計')) el.textContent = 'Total: 55';
   });
 
   // Tabs
@@ -1832,11 +1833,11 @@ function switchToJapanese() {
 
   // Crew tags
   document.querySelectorAll('.crew-tag').forEach(el => {
-    const map = { 'Children: 19':'子ども 19名', 'Parents: 15':'保護者 15名', 'Shinagawa Ward: 2':'品川区役所 2名', 'NEC: 7':'NEC 7名', 'GitHub: 10':'GitHub 10名' };
+    const map = { 'Children: 19':'子ども 19名', 'Parents: 15':'保護者 15名', 'Shinagawa Ward: 2':'品川区役所 2名', 'Special Guests: 2':'特別ゲスト 2名', 'NEC: 7':'NEC 7名', 'GitHub: 10':'GitHub 10名' };
     if (map[el.textContent]) el.textContent = map[el.textContent];
   });
   document.querySelectorAll('.crew-total').forEach(el => {
-    if (el.textContent.includes('Total')) el.textContent = '計 53名';
+    if (el.textContent.includes('Total')) el.textContent = '計 55名';
   });
 
   // Tabs
