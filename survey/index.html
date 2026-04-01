@@ -889,6 +889,43 @@ body {
   opacity: 0.5;
 }
 
+/* ===== LANGUAGE TOGGLE BUTTON (FLOATING) ===== */
+.lang-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9000;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--seed-cyan);
+  background: var(--seed-panel);
+  color: var(--seed-cyan);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px var(--seed-glow), inset 0 0 8px rgba(0, 229, 255, 0.08);
+  transition: box-shadow 0.3s, border-color 0.3s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.lang-toggle-btn:hover, .lang-toggle-btn:active {
+  border-color: var(--seed-white);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 12px rgba(0, 229, 255, 0.15);
+  transform: scale(1.08);
+}
+.lang-toggle-btn:active {
+  transform: scale(0.95);
+}
+.lang-toggle-btn.visible {
+  display: flex;
+}
+
 /* ===== LANGUAGE SWITCH OVERLAY ===== */
 #lang-overlay {
   position: fixed;
@@ -1244,6 +1281,9 @@ body.lang-switching .panel::before {
 </div>
 
 <!-- LANGUAGE SWITCH OVERLAY -->
+<!-- LANGUAGE TOGGLE BUTTON (FLOATING) -->
+<button class="lang-toggle-btn" id="lang-toggle-btn" onclick="onLangToggle()" aria-label="Switch language">EN</button>
+
 <div id="lang-overlay">
   <div class="lang-mascot-container">
     <div class="mascot-hud-label">SYSTEM LANGUAGE MODULE</div>
@@ -1354,6 +1394,7 @@ async function boot() {
   document.getElementById('main-dashboard').style.display = 'grid';
   document.getElementById('main-footer').style.display = 'block';
   document.getElementById('crew-btn').style.display = 'block';
+  document.getElementById('lang-toggle-btn').classList.add('visible');
 
   await new Promise(r => setTimeout(r, 300));
   initDashboard();
@@ -1617,6 +1658,10 @@ function triggerLangSwitch(lang) {
   if (langCooldown) return;
   langCooldown = true;
 
+  // Hide toggle button during animation
+  const toggleBtn = document.getElementById('lang-toggle-btn');
+  if (toggleBtn) toggleBtn.style.pointerEvents = 'none';
+
   const overlay = document.getElementById('lang-overlay');
   const mascotImg = document.getElementById('lang-mascot-img');
   const label = document.getElementById('lang-label');
@@ -1667,6 +1712,7 @@ function triggerLangSwitch(lang) {
     setTimeout(() => {
       document.body.classList.remove('lang-switching');
       langCooldown = false;
+      updateLangToggleBtn();
     }, 1000);
   }, 2500);
 }
@@ -1811,6 +1857,18 @@ function switchToJapanese() {
 
   const footer = document.querySelector('.footer');
   if (footer) footer.innerHTML = 'G.I.T.H.U.B. SYSTEM — FEEDBACK RECONNAISSANCE & EDUCATION EVALUATION — C.E.2026<div class="secret-hint">[ ◇ TYPE "en" → ENGLISH ◇ ]</div>';
+}
+
+function onLangToggle() {
+  if (langCooldown) return;
+  triggerLangSwitch(currentLang === 'ja' ? 'en' : 'ja');
+}
+
+function updateLangToggleBtn() {
+  const btn = document.getElementById('lang-toggle-btn');
+  if (!btn) return;
+  btn.textContent = currentLang === 'ja' ? 'EN' : 'JP';
+  btn.style.pointerEvents = '';
 }
 
 // ===== CREW ROSTER =====
