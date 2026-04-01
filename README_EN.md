@@ -41,7 +41,7 @@ As a volunteer activity of the GitHub Japan Corp Team, we organized a Minecraft 
 
 ## 🌟 Background
 
-Around November 2025, it all started with a desire to **do something meaningful for children's education** through the GitHub Japan Corp Team. While exploring ways to contribute to children's futures through volunteer activities, I reached out to NEC Corporation, and together we planned and brought this event to life.
+Around November 2025, it all started with a desire to **do something meaningful for children's education** through the GitHub Japan Corp Team. While exploring ways to contribute to children's futures through volunteer activities, NEC Corporation reached out to us, and together we planned and brought this event to life.
 
 We chose **Minecraft Education Edition** as the workshop platform and combined it with a tour of the Microsoft Shinagawa Office, giving children a firsthand experience of what it's like to be an engineer.
 
@@ -66,14 +66,31 @@ We started by asking: *"What is an engineer?"* — someone who builds things and
 - Teams discussed ideas, assigned roles, and **collaboratively built a large house**
 - Each team presented their world to the group
 
+| <img src="workshop_minecraftcup.jpeg" width="220"> | <img src="workshop_theme.jpeg" width="220"> | <img src="workshop_snacks.jpg" width="220"> |
+|:---:|:---:|:---:|
+| NEC's Nishimura introduces the Minecraft Cup | Theme Introduction | Picking snacks from Walt Disney World, Florida |
+| <img src="workshop_teamwork.jpeg" width="220"> | <img src="workshop_nec_support.jpeg" width="220"> | <img src="workshop_presentation.jpg" width="220"> |
+| Teams collaborating together | NEC staff providing hands-on support to kids | Presenting their creations to everyone |
+
 ### 3. Special Guest Talk — Nicole Kondo 🎤
-- **Nicole Kondo**, a 13-year-old entrepreneur, shared her experience competing in the **Minecraft National Championship** and her passion for AI education
+- **Nicole Kondo**, a 13-year-old entrepreneur, shared her experience competing in the **Minecraft National Championship**
+- She also spoke about her various passions and her journey toward **AI-related education and entrepreneurship**
 - A highly interactive session with many questions from the children
 
+| <img src="nikoru_presentation.jpeg" width="350"> |
+|:---:|
+| Nicole sharing her Minecraft National Championship experience |
+
 ### 4. Microsoft Office Tour 🏢
-- Families explored the Microsoft Shinagawa campus
-- Children were amazed by the jungle-themed spaces, ping pong tables, and dart areas
-- Parents were equally excited — many said *"I've always wanted to visit!"*
+- Not only the children, but **parents and NEC staff alike were all thrilled** during the office tour
+- GitHub actually has many former Microsoft employees, and one of them served as the tour guide
+- The office featured amazing facilities: a cafeteria, ping pong tables, billiards, darts, mini-golf, a gym, a theater room, and more
+- Unlimited juice and snacks for everyone — the kids had a blast!
+- We can't share detailed photos of the office interior for security reasons, but **if you're curious, please join our next event around August!**
+
+| <img src="office_tour_v2.jpg" width="350"> |
+|:---:|
+| Office Tour |
 
 ### 5. Special Gifts 🎁
 We prepared handmade special gifts for every child who participated.
@@ -98,6 +115,17 @@ Before closing, I surprised the children with a demo showing **GitHub's Octocat 
 | <img src="https://raw.githubusercontent.com/ktanino10/copilot-cli-minecraft-experiment2/main/images/hula_loop_octodex03.gif" width="250"> | <img src="https://raw.githubusercontent.com/ktanino10/copilot-cli-minecraft-experiment2/main/images/octcat_minecraft.gif" width="350"> |
 
 🔗 [copilot-cli-minecraft-experiment2](https://github.com/ktanino10/copilot-cli-minecraft-experiment2)
+
+### 7. Group Photos 📸
+To wrap things up, we all took a group photo! As you can see in the photos, the 3D-printed **Mona, Ducky, and Copilot** figures were a huge hit. ※ Each figure took a full two days to 3D-print, and the printer was running loudly above my head, so I lost about a week of sleep… but seeing the children's smiles made it all worthwhile.
+
+| <img src="group_kids_nikoru.jpeg" width="350"> | <img src="group_nec_github.jpeg" width="350"> |
+|:---:|:---:|
+| Kids & Nicole — Mona, Ducky & Copilot were a huge hit! | NEC volunteers (and I joined in too) |
+
+| <img src="group_everyone.jpg" width="500"> |
+|:---:|
+| Group photo — 55 participants, parents, volunteers & guests |
 
 ---
 
@@ -178,3 +206,28 @@ We considered distributing the Minecraft worlds created by the children during t
 
 *Recorded by Kyosuke Tanino — Volunteer Leader, GitHub Japan Corp Team*
 *Event Date: March 26, 2026*
+
+---
+
+## 🙏 Acknowledgments
+
+This event was made possible by the support and collaboration of many wonderful people. We extend our heartfelt thanks to everyone involved.
+
+- **GitHub Team Members** — who dedicated themselves fully to planning, preparation, and operations as volunteers
+- **NEC Corporation** volunteers — who provided warm, hands-on support for the children from co-planning through the day of the event
+- **Nicole Kondo & her father** — who joined as special guests and shared invaluable experiences with the children
+- **Shinagawa Ward Office** officials — who came to support the children in the local community
+- **Microsoft Japan** — who provided an amazing event space and made the office tour possible
+
+Thanks to everyone, we were able to create an unforgettable day for the children. Thank you so much!
+
+---
+
+## 📣 Activity Reports & Related Posts
+
+### Smile Kids
+- 📘 [Facebook — Smile Kids](https://www.facebook.com/smilekids365/)
+- 🌐 [Shinagawa Smile Net — Activity Report](https://pc.tamemap.net/1310901/activities/13109010114/reports/9139)
+
+### Nicole Kondo (CEO, EdFusion Inc.)
+- 🐦 [Post on X (formerly Twitter)](https://x.com/Nikoru2024/status/2037104165122670740) — *"Today was a truly special day. NEC invited me to speak at a Minecraft event — and GitHub was there too!"*
